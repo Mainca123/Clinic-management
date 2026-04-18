@@ -6,9 +6,9 @@ public enum RoleType {
     PATIENT(Constants.PATIENT);
 
     public static class Constants {
-        public static final String ADMIN = "admin";
-        public static final String DOCTOR = "doctor";
-        public static final String PATIENT = "patient";
+        public static final String ADMIN = "ADMIN";
+        public static final String DOCTOR = "DOCTOR";
+        public static final String PATIENT = "PATIENT";
     }
 
     private final String label;
