@@ -42,6 +42,13 @@ public class User extends PanacheEntity {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Column(name = "is_verified")
+    private Boolean isVerified;
+
+    @Column(name = "token_verified", columnDefinition = "TEXT")
+    private String tokenVerified;
+
+
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 

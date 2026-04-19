@@ -49,7 +49,7 @@ public class RegisterRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
     @Size(max = 100, message = "Email must not exceed 100 characters")
-    @Schema(example = "username@gmail.com")
+    @Schema(example = "giangchinhtgp@gmail.com")
     private String email;
 
     @NotNull(message = "Gender is required")

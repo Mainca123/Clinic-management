@@ -8,11 +8,18 @@ import java.time.Duration;
 public class TokenUtils {
 
     public String generateToken(String username, String role) {
-        // Quarkus SmallRye sẽ tự tìm file privateKey.pem trong resources để ký
         return Jwt.issuer("https://clinic-management.com")
                 .upn(username)
                 .groups(role)
                 .expiresIn(Duration.ofHours(8))
+                .sign();
+    }
+
+    public String generateVerifyToken(String email) {
+        return Jwt.issuer("https://clinic-management.com")
+                .upn(email)
+                .claim("type", "verify")
+                .expiresIn(Duration.ofMinutes(15))
                 .sign();
     }
 }
