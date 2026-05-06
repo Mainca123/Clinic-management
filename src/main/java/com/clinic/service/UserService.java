@@ -1,12 +1,14 @@
 package com.clinic.service;
 
 import com.clinic.constant.Message;
+import com.clinic.domain.dto.PasswordRequest;
 import com.clinic.domain.dto.UserResponse;
 import com.clinic.domain.dto.UserUpdateRequest;
 import com.clinic.domain.entity.User;
 import com.clinic.domain.mapper.UserMapper;
 import com.clinic.exception.ErrorMessage;
 import com.clinic.repository.UserRepository;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -72,5 +74,16 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("Upload avatar failed", e);
         }
+    }
+
+    @Transactional
+    public String changePassword(String identifier, PasswordRequest passwordRequest){
+        if(!passwordRequest.getPassword().equals(passwordRequest.getConfirmPassword()))
+            throw new RuntimeException("password.not.correct");
+        User user = getCurrentUser(identifier);
+        user.setPassword(BcryptUtil.bcryptHash(passwordRequest.getConfirmPassword()));
+        user.setIsVerified(true);
+        userRepository.persist(user);
+        return "change.password.success";
     }
 }

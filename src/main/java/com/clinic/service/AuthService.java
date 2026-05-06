@@ -4,6 +4,7 @@ import com.clinic.constant.Message;
 import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.LoginRequest;
 import com.clinic.domain.dto.LoginResponse;
+import com.clinic.domain.dto.PasswordRequest;
 import com.clinic.domain.dto.RegisterRequest;
 import com.clinic.domain.entity.User;
 import com.clinic.domain.mapper.UserMapper;
@@ -15,8 +16,11 @@ import io.smallrye.jwt.auth.principal.JWTParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import io.smallrye.jwt.auth.principal.ParseException;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthService {
@@ -30,17 +34,30 @@ public class AuthService {
     @Inject
     UserMapper userMapper;
 
-    public LoginResponse login(LoginRequest loginRequest){
-        User user = userRepository.findByUsernameOrEmail(loginRequest.getUsername()).orElseThrow(()
-        -> new RuntimeException(ErrorMessage.User.NOT_FOUND_USER));
+    private User findUser(String key){
+        User user = userRepository.findByUsernameOrEmail(key).orElseThrow(()
+                -> new RuntimeException(ErrorMessage.User.NOT_FOUND_USER));
+        return user;
+    }
 
-        if(!user.getIsVerified())
+    public LoginResponse login(LoginRequest loginRequest){
+        User user = findUser(loginRequest.getUsername());
+
+        if(!user.getIsVerified() && user.getTokenVerified()!=null)
             throw new RuntimeException("account.not.verified");
-        if(BcryptUtil.matches(loginRequest.getPassword(), user.getPassword()))
+        if(BcryptUtil.matches(loginRequest.getPassword(), user.getPassword())){
+            if(!user.getIsVerified())
+                return LoginResponse.builder()
+                        .role(user.getRole().name())
+                        .checkPass(true)
+                        .token(tokenUtils.generateToken(user.getUsername(),user.getRole().name()))
+                        .build();
             return LoginResponse.builder()
                     .role(user.getRole().name())
+                    .checkPass(false)
                     .token(tokenUtils.generateToken(user.getUsername(),user.getRole().name()))
                     .build();
+        }
         else
             throw new RuntimeException(ErrorMessage.User.INCORRECT_INFORMATION);
     }
@@ -68,7 +85,6 @@ public class AuthService {
 
     @Transactional
     public String verifyEmail(String token) {
-
         try {
             token = java.net.URLDecoder.decode(token, java.nio.charset.StandardCharsets.UTF_8);
 
@@ -81,8 +97,7 @@ public class AuthService {
                 throw new RuntimeException("error.token");
             }
 
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("user.not.found"));
+            User user = findUser(email);
 
             if (user.getIsVerified()) {
                 return "account.verified";
@@ -110,5 +125,41 @@ public class AuthService {
 
             return "resend.token";
         }
+    }
+
+    @Transactional
+    public String resetPassword(String email){
+        User user = findUser(email);
+        if(user!=null){
+            String newPass = generateEasy();
+            user.setPassword(BcryptUtil.bcryptHash(newPass));
+            user.setIsVerified(false);
+            userRepository.persist(user);
+            emailService.sendResetPasswordEmail(email, newPass);
+        }
+        return "reset.password.success";
+    }
+
+    public String generateEasy() {
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String digits = "0123456789";
+        String special = "@#$%&!?";
+        String all = lower + upper + digits + special;
+
+        SecureRandom rand = new SecureRandom();
+        String pwd = ""
+                + lower.charAt(rand.nextInt(lower.length()))
+                + upper.charAt(rand.nextInt(upper.length()))
+                + digits.charAt(rand.nextInt(digits.length()))
+                + special.charAt(rand.nextInt(special.length()));
+
+        for (int i = 0; i < 4; i++) {
+            pwd += all.charAt(rand.nextInt(all.length()));
+        }
+        var list = pwd.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        Collections.shuffle(list);
+
+        return list.stream().map(String::valueOf).collect(Collectors.joining());
     }
 }

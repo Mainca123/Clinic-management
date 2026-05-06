@@ -43,4 +43,10 @@ public class AuthResource {
     public RestData<?> verifyEmail(@QueryParam("token") String token) {
         return RestData.success(authService.verifyEmail(token));
     }
+
+    @PATCH
+    @Path("/password-resets")
+    public RestData<?> resetPassword(@QueryParam("email") String email) {
+        return RestData.success(authService.resetPassword(email));
+    }
 }

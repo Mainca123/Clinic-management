@@ -12,5 +12,6 @@ import lombok.Setter;
 @Builder
 public class LoginResponse {
     private String role;
+    private Boolean checkPass;
     private String token;
 }

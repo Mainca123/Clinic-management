@@ -4,6 +4,7 @@ package com.clinic.resource;
 import com.clinic.base.RestData;
 import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.AvatarUploadRequest;
+import com.clinic.domain.dto.PasswordRequest;
 import com.clinic.domain.dto.UserUpdateRequest;
 import com.clinic.service.UserService;
 import jakarta.annotation.security.RolesAllowed;
@@ -46,7 +47,7 @@ public class UserResource {
     }
 
 
-    @POST
+    @PATCH
     @Path("/me/avatar")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @RolesAllowed(RoleType.Constants.PATIENT)
@@ -58,7 +59,13 @@ public class UserResource {
     }
 
 
-
+    @PATCH
+    @Path("/password")
+    @RolesAllowed(RoleType.Constants.PATIENT)
+    public RestData<?> changePassword(@Valid PasswordRequest request) {
+        String identifier = getIdentifierFromToken();
+        return RestData.success(userService.changePassword(identifier, request));
+    }
 
 
     private String getIdentifierFromToken() {
