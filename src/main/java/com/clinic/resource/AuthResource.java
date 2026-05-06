@@ -7,6 +7,7 @@ import com.clinic.domain.dto.RegisterRequest;
 import com.clinic.service.AuthService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -27,7 +28,7 @@ public class AuthResource {
 
     @POST
     @Path("/registration")
-    public RestData<?> register(RegisterRequest request){
+    public RestData<?> register(@Valid RegisterRequest request){
         return RestData.success(authService.register(request));
     }
 

@@ -48,11 +48,11 @@ public class AuthService {
 
     @Transactional
     public String register(RegisterRequest request){
-//        if(userRepository.findByUsernameOrEmail(request.getUsername()).isPresent())
-//            throw new RuntimeException(ErrorMessage.User.SAVE_INFORMATION);
+        if(userRepository.findByUsernameOrEmail(request.getUsername()).isPresent())
+            throw new RuntimeException(ErrorMessage.User.SAVE_INFORMATION);
         User user = userMapper.toUser(request);
         user.setPassword(BcryptUtil.bcryptHash(user.getPassword()));
-        user.setRole(RoleType.ADMIN);
+        user.setRole(RoleType.PATIENT);
         user.setIsVerified(false);
         user.setTokenVerified(tokenUtils.generateVerifyToken(user.getEmail()));
         userRepository.persist(user);
