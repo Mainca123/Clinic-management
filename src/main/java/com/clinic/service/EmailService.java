@@ -92,7 +92,7 @@ public class EmailService {
 
         Email from = new Email(sendGridFromEmail);
         Email to = new Email(toEmail);
-        Content content = new Content("text/html; charset=UTF-8", html);
+        Content content = new Content("text/html", html);
         Mail mail = new Mail(from, subject, to, content);
 
         SendGrid sg = new SendGrid(sendGridApiKey);
