@@ -7,6 +7,7 @@ import com.clinic.domain.dto.AvatarUploadRequest;
 import com.clinic.domain.dto.PasswordRequest;
 import com.clinic.domain.dto.UserUpdateRequest;
 import com.clinic.service.UserService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class UserResource {
 
     @Inject
@@ -32,7 +34,6 @@ public class UserResource {
 
     @GET
     @Path("/me")
-    @RolesAllowed(RoleType.Constants.PATIENT)
     public RestData<?> getCurrentUser() {
         String identifier = getIdentifierFromToken();
         return RestData.success(userService.getUserDetail(identifier));
@@ -40,7 +41,6 @@ public class UserResource {
     }
 
     @PATCH
-    @RolesAllowed(RoleType.Constants.PATIENT)
     public RestData<?> updateUser(@Valid UserUpdateRequest request) {
         String identifier = getIdentifierFromToken();
         return RestData.success(userService.updateCurrentUser(identifier, request));
@@ -50,7 +50,6 @@ public class UserResource {
     @PATCH
     @Path("/me/avatar")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @RolesAllowed(RoleType.Constants.PATIENT)
     public RestData<?> uploadAvatar(
             @RestForm("file") FileUpload file
     ) {
@@ -61,7 +60,6 @@ public class UserResource {
 
     @PATCH
     @Path("/password")
-    @RolesAllowed(RoleType.Constants.PATIENT)
     public RestData<?> changePassword(@Valid PasswordRequest request) {
         String identifier = getIdentifierFromToken();
         return RestData.success(userService.changePassword(identifier, request));

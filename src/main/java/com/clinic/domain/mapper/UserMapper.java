@@ -1,5 +1,6 @@
 package com.clinic.domain.mapper;
 
+import com.clinic.domain.dto.DoctorCreateRequest;
 import com.clinic.domain.dto.LoginResponse;
 import com.clinic.domain.dto.RegisterRequest;
 import com.clinic.domain.dto.UserResponse;
@@ -11,4 +12,5 @@ public interface UserMapper {
     LoginResponse toLoginResponse(User user);
     User toUser(RegisterRequest request);
     UserResponse toUserResponse(User user);
+    User toUser(DoctorCreateRequest request);
 }
