@@ -50,12 +50,12 @@ public class AuthService {
                 return LoginResponse.builder()
                         .role(user.getRole().name())
                         .checkPass(true)
-                        .token(tokenUtils.generateToken(user.getUsername(),user.getRole().name()))
+                        .token(tokenUtils.generateToken(user.id,user.getUsername(),user.getRole().name()))
                         .build();
             return LoginResponse.builder()
                     .role(user.getRole().name())
                     .checkPass(false)
-                    .token(tokenUtils.generateToken(user.getUsername(),user.getRole().name()))
+                    .token(tokenUtils.generateToken(user.id,user.getUsername(),user.getRole().name()))
                     .build();
         }
         else

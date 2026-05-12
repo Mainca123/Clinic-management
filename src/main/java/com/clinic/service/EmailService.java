@@ -41,6 +41,8 @@ public class EmailService {
     public void sendVerificationEmail(String toEmail, String token) {
         String verifyLink = verifyBaseUrl + token;
         String subject = "[" + systemName + "] Xác thực tài khoản";
+        System.out.println("API1" + sendGridApiKey);
+        System.out.println("API2" + resendApiKey);
 
         executeEmailWithFallback(toEmail, subject, "verification-email.html", verifyLink, null);
     }
