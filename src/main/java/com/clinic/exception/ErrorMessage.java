@@ -15,4 +15,10 @@ public class ErrorMessage {
         public static final String SCHEDULE_CONFLICT = "appointment.schedule.conflict";
         public static final String INVALID_TIME = "appointment.invalid.time";
     }
+
+    public static class Medicine {
+        public static final String NOT_FOUND = "medicine.not.found";
+        public static final String ALREADY_EXISTS = "medicine.already.exists";
+        public static final String IN_USE = "medicine.is.currently.in.use"; // Khi thuốc đã có trong đơn thuốc thì không được xóa
+    }
 }
