@@ -27,10 +27,9 @@ public class AuthResource {
     AuthService authService;
 
     @GET
-    @RolesAllowed(RoleType.Constants.ADMIN)
     @Operation(
-            summary = "Kiểm tra quyền ADMIN",
-            description = "API dùng để test token và kiểm tra quyền ADMIN"
+            summary = "Ping hệ thống",
+            description = "API dùng để test"
     )
     @APIResponse(responseCode = "200", description = "Xác thực thành công")
     public RestData<?> hello(){
