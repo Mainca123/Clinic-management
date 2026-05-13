@@ -5,6 +5,7 @@ import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.LoginRequest;
 import com.clinic.domain.dto.RegisterRequest;
 import com.clinic.service.AuthService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Authentication", description = "Các API xác thực người dùng")
+@PermitAll
 public class AuthResource {
 
     @Inject

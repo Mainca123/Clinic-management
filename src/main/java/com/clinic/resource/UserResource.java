@@ -124,9 +124,6 @@ public class UserResource {
 
 
     private String getIdentifierFromToken() {
-        if (jwt.getSubject() != null) {
-            return jwt.getSubject();
-        }
         return jwt.getClaim("upn");
     }
 }
