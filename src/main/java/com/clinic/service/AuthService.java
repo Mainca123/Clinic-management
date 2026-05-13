@@ -65,16 +65,37 @@ public class AuthService {
 
     @Transactional
     public String register(RegisterRequest request){
-        if(userRepository.findByUsernameOrEmail(request.getUsername()).isPresent())
-            throw new RuntimeException(ErrorMessage.User.SAVE_INFORMATION);
-        User user = userMapper.toUser(request);
-        user.setPassword(BcryptUtil.bcryptHash(user.getPassword()));
-        user.setRole(RoleType.PATIENT);
-        user.setIsVerified(false);
-        user.setTokenVerified(tokenUtils.generateVerifyToken(user.getEmail()));
-        userRepository.persist(user);
-        emailService.sendVerificationEmail(user.getEmail(), user.getTokenVerified());
-        return Message.User.REGISTER;
+        try {
+
+            if(userRepository.findByUsernameOrEmail(request.getUsername()).isPresent())
+                throw new RuntimeException(ErrorMessage.User.SAVE_INFORMATION);
+
+            User user = userMapper.toUser(request);
+
+            user.setPassword(BcryptUtil.bcryptHash(user.getPassword()));
+            user.setRole(RoleType.PATIENT);
+            user.setIsVerified(false);
+            user.setTokenVerified(tokenUtils.generateVerifyToken(user.getEmail()));
+
+            userRepository.persistAndFlush(user);
+
+            System.out.println("USER SAVED SUCCESS");
+
+            emailService.sendVerificationEmail(
+                    user.getEmail(),
+                    user.getTokenVerified()
+            );
+
+            return Message.User.REGISTER;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            System.out.println("ERROR = " + e.getMessage());
+
+            throw e;
+        }
     }
 
     @Inject
