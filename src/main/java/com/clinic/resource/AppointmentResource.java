@@ -90,4 +90,17 @@ public class AppointmentResource {
     public RestData<?> getAppointment(@PathParam("id") Long id) {
         return RestData.success(appointmentService.getById(id));
     }
+
+
+    @PATCH
+    @Path("/{id}/status/delete") // Thêm hậu tố rõ ràng để tránh xung đột endpoint với API update status cũ
+    @RolesAllowed({"ADMIN", "DOCTOR", "PATIENT"}) // Các quyền được phép hủy/xóa lịch hẹn
+    @Operation(
+            summary = "Xóa/Hủy trạng thái lịch hẹn",
+            description = "Thay đổi trạng thái xóa mềm (isDeleted = true) và cập nhật thời gian xóa của lịch hẹn theo ID"
+    )
+    public RestData<String> deleteStatus(@PathParam("id") Long id) {
+        appointmentService.deleteAppointmentStatus(id);
+        return RestData.success("Xóa/Hủy lịch hẹn thành công");
+    }
 }

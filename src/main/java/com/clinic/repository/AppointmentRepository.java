@@ -33,4 +33,8 @@ public class AppointmentRepository implements PanacheRepository<Appointment> {
             return find("patient.id = ?1 and isDeleted = false", userId).page(page);
         }
     }
+
+    public Optional<Appointment> findByIdAndNotDeleted(Long id) {
+        return find("id = ?1 and isDeleted = false", id).firstResultOptional();
+    }
 }
