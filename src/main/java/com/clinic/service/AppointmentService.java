@@ -123,4 +123,23 @@ public class AppointmentService {
         // Chuyển đổi Entity sang Response DTO
         return appointmentMapper.toResponse(appointment);
     }
+
+    @Transactional // Bắt buộc có để cập nhật dữ liệu xuống DB
+    public void deleteAppointmentStatus(Long id) {
+        // 1. Tìm lịch hẹn theo ID, nếu không thấy hoặc đã xóa rồi thì báo lỗi 404
+        Appointment appointment = appointmentRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new ClinicException(
+                        ErrorMessage.Appointment.PATIENT_NOT_FOUND, // Hoặc mã lỗi không tìm thấy lịch hẹn phù hợp
+                        Response.Status.NOT_FOUND
+                ));
+
+        // 2. Thực hiện xóa mềm hệ thống và cập nhật trạng thái hủy lịch
+        appointment.setIsDeleted(true);
+        appointment.setDeletedAt(java.time.Instant.now()); // Ghi nhận thời gian xóa lịch
+
+        // Nếu bạn có Enum trạng thái lịch hẹn (ví dụ: CANCELLED), hãy cập nhật nó tại đây
+        // appointment.setStatus(AppointmentStatus.CANCELLED);
+
+        // Kết thúc method, Quarkus Hibernate Panache sẽ tự động đồng bộ xuống Database
+    }
 }
