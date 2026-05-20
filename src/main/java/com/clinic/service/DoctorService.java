@@ -93,7 +93,7 @@ public class DoctorService {
                 .stream()
                 .map(doctor -> DoctorResponse.builder()
                         .id(doctor.id)
-                        .username(doctor.getUser().getFullName())
+                        .fullName(doctor.getUser().getFullName())
                         .email(doctor.getUser().getEmail())
                         .departmentName(doctor.getDepartment().getName())
                         .specialization(doctor.getSpecialization())
