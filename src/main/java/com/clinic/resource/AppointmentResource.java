@@ -1,10 +1,12 @@
 package com.clinic.resource;
 
 import com.clinic.base.RestData;
+import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.AppointmentRequest;
 import com.clinic.domain.dto.AppointmentResponse;
 import com.clinic.domain.dto.StatusRequest;
 import com.clinic.service.AppointmentService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -20,6 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON) // Nhận dữ liệu JSON
 @Produces(MediaType.APPLICATION_JSON) // Trả về dữ liệu JSON
 @Tag(name = "Quản lý Lịch hẹn", description = "Các API liên quan đến lịch khám bệnh")
+@Authenticated
 public class AppointmentResource {
 
     @Inject
