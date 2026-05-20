@@ -6,6 +6,7 @@ import com.clinic.domain.dto.DoctorCreateRequest;
 import com.clinic.domain.dto.DoctorUpdateRequest;
 import com.clinic.service.DoctorService;
 
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,11 +16,13 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.reactive.RestPath;
 
 @Path("/doctors")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Doctor", description = "Quản lý bác sĩ")
+@Authenticated
 public class DoctorResource {
 
     @Inject
@@ -79,5 +82,27 @@ public class DoctorResource {
         return RestData.success(
                 doctorService.updateDoctor(doctorUpdateRequest)
         );
+    }
+
+
+    @GET
+    @Operation(
+            summary = "Lấy tất cả các bác sĩ",
+            description = "API dùng để lấy tất cả các bác sĩ"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Lấy thành công"
+    )
+    @APIResponse(
+            responseCode = "404",
+            description = "Không tìm thấy bác sĩ"
+    )
+    @APIResponse(
+            responseCode = "403",
+            description = "Không có quyền truy cập"
+    )
+    public RestData<?> getAllDoctor(@QueryParam("page") @DefaultValue("0") int page){
+        return RestData.success(doctorService.getAllDoctor(page));
     }
 }

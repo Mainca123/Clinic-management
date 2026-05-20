@@ -2,6 +2,8 @@ package com.clinic.service;
 
 import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.DoctorCreateRequest;
+import com.clinic.domain.dto.DoctorListResponse;
+import com.clinic.domain.dto.DoctorResponse;
 import com.clinic.domain.dto.DoctorUpdateRequest;
 import com.clinic.domain.entity.Department;
 import com.clinic.domain.entity.Doctor;
@@ -15,6 +17,10 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import io.quarkus.panache.common.Page;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class DoctorService {
@@ -74,6 +80,32 @@ public class DoctorService {
 
         doctorRepository.persist(doctor);
         return "SUCCESS";
+    }
+
+    @Transactional
+    public DoctorListResponse getAllDoctor(int page){
+
+        var doctorQuery = doctorRepository.findAll();
+
+        doctorQuery.page(Page.of(page, 20));
+
+        List<DoctorResponse> doctorResponses = doctorQuery.list()
+                .stream()
+                .map(doctor -> DoctorResponse.builder()
+                        .id(doctor.id)
+                        .username(doctor.getUser().getFullName())
+                        .email(doctor.getUser().getEmail())
+                        .departmentName(doctor.getDepartment().getName())
+                        .specialization(doctor.getSpecialization())
+                        .experienceYears(doctor.getExperienceYears())
+                        .build())
+                .toList();
+
+        return DoctorListResponse.builder()
+                .doctorList(doctorResponses)
+                .totalItems(doctorQuery.count())
+                .totalPages(doctorQuery.pageCount())
+                .build();
     }
 
 }
