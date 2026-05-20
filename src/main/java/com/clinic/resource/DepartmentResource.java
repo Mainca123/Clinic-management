@@ -5,12 +5,10 @@ import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.DepartmentRequest;
 import com.clinic.service.DepartmentService;
 
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -22,6 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Department", description = "Quản lý khoa")
+@Authenticated
 public class DepartmentResource {
 
     @Inject
@@ -50,6 +49,28 @@ public class DepartmentResource {
 
         return RestData.success(
                 departmentService.createDepartment(departmentRequest)
+        );
+    }
+
+    @GET
+    @Operation(
+            summary = "Lấy phòng ban",
+            description = "API dùng để lấy tất cả các phòng ban trong hệ thống"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Lấy thành công"
+    )
+    @APIResponse(
+            responseCode = "403",
+            description = "Không có quyền truy cập"
+    )
+    public RestData<?> getAllDepartment(
+            @QueryParam("page") @DefaultValue("0")
+            int page){
+
+        return RestData.success(
+                departmentService.getAllDepartment(page)
         );
     }
 }
