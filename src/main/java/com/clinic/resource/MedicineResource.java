@@ -24,7 +24,7 @@ public class MedicineResource {
     MedicineService medicineService;
 
     @POST
-    @RolesAllowed({"ADMIN", "DOCTOR"}) // Chỉ cho phép Admin/Bác sĩ thêm thuốc
+    @RolesAllowed({"ADMIN"}) // Chỉ cho phép Admin
     @Operation(summary = "Thêm thuốc mới", description = "Tạo một loại thuốc mới vào danh mục")
     public RestData<MedicineResponse> create(@Valid MedicineRequest request) {
         // @Valid dùng để kích hoạt kiểm tra @NotBlank, @Size trong DTO
@@ -53,7 +53,7 @@ public class MedicineResource {
     // Trong MedicineResource.java
     @PATCH
     @Path("/{id}")
-    @RolesAllowed({"ADMIN","DOCTOR"}) // Thường chỉ Admin mới được quyền sửa danh mục thuốc
+    @RolesAllowed({"ADMIN"}) // Thường chỉ Admin mới được quyền sửa danh mục thuốc
     @Operation(summary = "Sửa thông tin thuốc", description = "Cập nhật tên hoặc đơn vị tính của thuốc theo ID")
     public RestData<MedicineResponse> update(
             @PathParam("id") Long id,
@@ -66,7 +66,7 @@ public class MedicineResource {
     // Trong MedicineResource.java
     @PATCH
     @Path("/{id}/delete") // Thêm /delete để phân biệt với API update thông tin
-    @RolesAllowed({"ADMIN","DOCTOR"}) // Chỉ Admin mới được quyền xóa danh mục
+    @RolesAllowed({"ADMIN"}) // Chỉ Admin mới được quyền xóa danh mục
     @Operation(summary = "Xóa thuốc", description = "Đánh dấu thuốc đã bị xóa trong hệ thống")
     public RestData<String> delete(@PathParam("id") Long id) {
         medicineService.delete(id);
