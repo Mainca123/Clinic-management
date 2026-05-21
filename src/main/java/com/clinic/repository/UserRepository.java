@@ -4,7 +4,6 @@ import com.clinic.domain.entity.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,4 +48,14 @@ public class UserRepository implements PanacheRepository<User> {
                 .page(Page.ofSize(limit))
                 .list();
     }
+    public List<User> getUsers(int page, int size) {
+        return findAll()
+                .page(page - 1, size)
+                .list();
+    }
+
+    public long countUsers() {
+        return count("isDeleted = false");
+    }
+
 }

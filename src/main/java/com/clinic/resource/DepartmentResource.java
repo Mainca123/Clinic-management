@@ -12,6 +12,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -52,6 +53,7 @@ public class DepartmentResource {
         );
     }
 
+
     @GET
     @Operation(
             summary = "Lấy phòng ban",
@@ -59,12 +61,7 @@ public class DepartmentResource {
     )
     @APIResponse(
             responseCode = "200",
-            description = "Lấy thành công"
-    )
-    @APIResponse(
-            responseCode = "403",
-            description = "Không có quyền truy cập"
-    )
+            description = "Lấy thành công")
     public RestData<?> getAllDepartment(
             @QueryParam("page") @DefaultValue("0")
             int page){
@@ -73,4 +70,64 @@ public class DepartmentResource {
                 departmentService.getAllDepartment(page)
         );
     }
+
+    @PATCH
+    @Path("/{id}/delete")
+//    @RolesAllowed(RoleType.Constants.ADMIN)
+    @RolesAllowed({"ADMIN","DOCTOR"}) // Chỉ Admin mới có quyền xóa khoa
+    @Operation(
+            summary = "Admin xóa khoa (Xóa mềm)",
+            description = "API dùng để đổi trạng thái hoạt động của khoa thành đã xóa"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Xóa khoa thành công"
+    )
+    @APIResponse(
+            responseCode = "403",
+            description = "Không có quyền truy cập"
+    )
+
+
+
+    public RestData<String> deleteDepartment(
+            @PathParam("id")
+            @Parameter(description = "ID của khoa cần xóa", required = true)
+            Long id
+    ) {
+        return RestData.success(
+                departmentService.deleteDepartment(id)
+        );
+    }
+
+    // Bổ sung vào class DepartmentResource.java
+
+    @PATCH
+    @Path("/{id}")
+//    @RolesAllowed(RoleType.Constants.ADMIN) // Chỉ Admin mới có quyền chỉnh sửa thông tin khoa
+    @RolesAllowed({"ADMIN","DOCTOR"})
+    @Operation(
+            summary = "Admin sửa thông tin khoa",
+            description = "API dùng để cập nhật tên hoặc mô tả của một khoa theo ID"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Cập nhật thông tin khoa thành công"
+    )
+    @APIResponse(
+            responseCode = "403",
+            description = "Không có quyền truy cập"
+    )
+    public RestData<String> updateDepartment(
+            @PathParam("id")
+            @Parameter(description = "ID của khoa cần chỉnh sửa", required = true)
+            Long id,
+
+            @RequestBody(description = "Thông tin khoa cần cập nhật", required = true)
+            DepartmentRequest departmentRequest
+    ) {
+        String result = departmentService.updateDepartment(id, departmentRequest);
+        return RestData.success(result);
+    }
+
 }

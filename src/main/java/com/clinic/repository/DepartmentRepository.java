@@ -23,6 +23,7 @@ public class DepartmentRepository implements PanacheRepository<Department> {
     }
 
 
+
     public List<Department> searchDepartment(
             String keyword,
             int searchLimit
@@ -46,4 +47,11 @@ public class DepartmentRepository implements PanacheRepository<Department> {
                 .page(Page.ofSize(searchLimit))
                 .list();
     }
+
+
+    // Tìm khoa theo ID và đảm bảo chưa bị xóa mềm
+    public Optional<Department> findByIdNotDeleted(Long id) {
+        return find("id = ?1 and isDeleted = false", id).firstResultOptional();
+    }
 }
+

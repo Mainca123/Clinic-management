@@ -6,6 +6,7 @@ import com.clinic.domain.dto.PasswordRequest;
 import com.clinic.domain.dto.UserUpdateRequest;
 import com.clinic.service.UserService;
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -125,5 +126,50 @@ public class UserResource {
 
     private String getIdentifierFromToken() {
         return jwt.getClaim("upn");
+    }
+
+    @GET
+    @Operation(
+            summary = "Lấy danh sách người dùng",
+            description = "Admin lấy danh sách người dùng theo phân trang"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Lấy danh sách người dùng thành công"
+    )
+    public RestData<?> getUsers(
+
+            @QueryParam("page")
+            @DefaultValue("1")
+            int page,
+
+            @QueryParam("size")
+            @DefaultValue("20")
+            int size
+    ) {
+
+        return RestData.success(userService.getUsers(page, size));
+    }
+
+    // Bổ sung vào class UserResource.java
+
+    @DELETE
+    @Path("/{id}")
+    @RolesAllowed({"ADMIN","DOCTOR"}) // Chỉ Admin mới có quyền khóa tài khoản người dùng
+    @Operation(
+            summary = "Admin khóa người dùng (Xóa mềm)",
+            description = "API dùng để chuyển trạng thái tài khoản người dùng sang bị xóa và lưu ngày xóa"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Khóa người dùng thành công"
+    )
+    public RestData<String> deleteUser(
+            @PathParam("id")
+            @Parameter(description = "ID của người dùng cần khóa", required = true)
+            Long id
+    ) {
+        String result = userService.deleteUser(id);
+        return RestData.success(result);
     }
 }

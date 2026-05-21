@@ -13,6 +13,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -96,13 +97,35 @@ public class DoctorResource {
     )
     @APIResponse(
             responseCode = "404",
-            description = "Không tìm thấy bác sĩ"
+            description = "Không tìm thấy bác sĩ")
+    public RestData<?> getAllDoctor(@QueryParam("page") @DefaultValue("0") int page) {
+        return RestData.success(doctorService.getAllDoctor(page));
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @RolesAllowed(RoleType.Constants.ADMIN) // Chỉ Admin mới có quyền xóa bác sĩ
+    @Operation(
+            summary = "Admin xóa bác sĩ",
+            description = "API dùng để thay đổi trạng thái tài khoản của bác sĩ thành đã xóa (Xóa mềm)"
+    )
+    @APIResponse(
+            responseCode = "200",
+            description = "Xóa thông tin bác sĩ thành công"
     )
     @APIResponse(
             responseCode = "403",
             description = "Không có quyền truy cập"
     )
-    public RestData<?> getAllDoctor(@QueryParam("page") @DefaultValue("0") int page){
-        return RestData.success(doctorService.getAllDoctor(page));
+
+
+    public RestData<String> deleteDoctor(
+            @PathParam("id")
+            @Parameter(description = "ID của bác sĩ cần xóa", required = true)
+            Long id
+    ) {
+        String result = doctorService.deleteDoctor(id);
+        return RestData.success(result);
+
     }
 }

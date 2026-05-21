@@ -82,6 +82,7 @@ public class DoctorService {
         return "SUCCESS";
     }
 
+
     @Transactional
     public DoctorListResponse getAllDoctor(int page){
 
@@ -106,6 +107,28 @@ public class DoctorService {
                 .totalItems(doctorQuery.count())
                 .totalPages(doctorQuery.pageCount())
                 .build();
+    }
+
+
+    // Thêm vào class DoctorService.java
+
+    @Transactional
+    public String deleteDoctor(Long id) {
+        // 1. Tìm bác sĩ theo ID và chưa bị xóa
+        Doctor doctor = doctorRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ với ID: " + id));
+
+        // 2. Chuyển đổi trạng thái tài khoản thành đã xóa (Xóa mềm)
+        doctor.setIsDeleted(true);
+
+        // Nếu trong hệ thống của bạn có trường ngày xóa (như bảng Users), bạn bổ sung thêm dòng dưới:
+        // doctor.setDeletedAt(LocalDateTime.now());
+
+        // 3. Cập nhật lại vào Database
+        doctorRepository.persist(doctor);
+
+        // Trả về chuỗi thông báo thành công theo đúng tài liệu thiết kế
+        return "Thông báo thành công"; // Hoặc "OK" tùy bạn chuẩn hóa text trả về
     }
 
 }
