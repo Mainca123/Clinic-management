@@ -12,4 +12,10 @@ public class DepartmentRepository implements PanacheRepository<Department> {
     public Optional<Department> findDepartmentById(Long id){
         return find("id = ?1", id).firstResultOptional();
     }
+
+
+    // Tìm khoa theo ID và đảm bảo chưa bị xóa mềm
+    public Optional<Department> findByIdNotDeleted(Long id) {
+        return find("id = ?1 and isDeleted = false", id).firstResultOptional();
+    }
 }

@@ -4,6 +4,7 @@ import com.clinic.domain.entity.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -21,5 +22,15 @@ public class UserRepository implements PanacheRepository<User> {
 
     public Optional<User> findByTokenVerified(String token) {
         return find("tokenVerified = ?1", token).firstResultOptional();
+    }
+
+    public List<User> getUsers(int page, int size) {
+        return findAll()
+                .page(page - 1, size)
+                .list();
+    }
+
+    public long countUsers() {
+        return count("isDeleted = false");
     }
 }

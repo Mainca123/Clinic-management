@@ -13,4 +13,10 @@ public class DoctorRepository implements PanacheRepository<Doctor> {
     public Optional<Doctor> findByUserId(Long id){
         return find("user.id = ?1",id).firstResultOptional();
     }
+
+
+    public Optional<Doctor> findByIdAndNotDeleted(Long id) {
+        // Tìm bác sĩ có id tương ứng và trạng thái isDeleted = false (hoặc bằng 0 tùy kiểu dữ liệu của bạn)
+        return find("id = ?1 and isDeleted = false", id).firstResultOptional();
+    }
 }
