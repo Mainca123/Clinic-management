@@ -26,4 +26,6 @@ public class MedicineRepository implements PanacheRepository<Medicine> {
         // Lấy tất cả thuốc có isDeleted = false, sắp xếp theo tên từ A-Z
         return list("isDeleted = false order by name asc");
     }
+
+
 }

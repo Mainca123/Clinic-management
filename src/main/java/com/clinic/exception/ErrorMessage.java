@@ -21,4 +21,9 @@ public class ErrorMessage {
         public static final String ALREADY_EXISTS = "medicine.already.exists";
         public static final String IN_USE = "medicine.is.currently.in.use"; // Khi thuốc đã có trong đơn thuốc thì không được xóa
     }
+
+    public static class MedicalRecord {
+        public static final String NOT_FOUND = "medical.record.not.found";
+        public static final String INVALID_DATA = "medical.record.invalid.data";
+    }
 }
