@@ -4,7 +4,6 @@ import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Duration;
 
-import static io.quarkus.hibernate.orm.panache.PanacheEntity_.id;
 
 @ApplicationScoped
 public class TokenUtils {
