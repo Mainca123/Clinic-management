@@ -146,4 +146,24 @@ public class UserService {
 
         return Message.User.SUCCESS; // Hoặc trả về chuỗi thông báo "Khóa người dùng thành công"
     }
+
+    // Thêm vào file UserService.java
+
+    public UserListResponse getPatientsForAdmin(Long doctorId, int page, int size) {
+        // 1. Gọi Repository lấy danh sách bệnh nhân dựa vào Doctor ID
+        List<User> patients = userRepository.getPatientsByDoctorId(doctorId, page, size);
+        long totalItems = userRepository.countPatientsByDoctorId(doctorId);
+
+        // 2. Tính toán số trang
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        // 3. Map sang Response DTO và build trả về
+        return UserListResponse.builder()
+                .users(mapper.toUserResponses(patients))
+                .totalItems(totalItems)
+                .totalPages(totalPages)
+                .currentPage(page)
+                .pageSize(size)
+                .build();
+    }
 }

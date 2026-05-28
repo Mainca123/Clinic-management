@@ -50,7 +50,7 @@ public class UserRepository implements PanacheRepository<User> {
     }
     public List<User> getUsers(int page, int size) {
         return findAll()
-                .page(page - 1, size)
+                .page(page - 0, size)
                 .list();
     }
 
@@ -71,6 +71,20 @@ public class UserRepository implements PanacheRepository<User> {
     public long countPatientsByDoctor(Long doctorUserId) {
         // Tương tự cho hàm đếm số lượng
         return find("select distinct a.patient from Appointment a where a.doctor.user.id = ?1 and a.isDeleted = false", doctorUserId)
+                .count();
+    }
+
+    // Thêm vào file UserRepository.java
+
+    public List<User> getPatientsByDoctorId(Long doctorId, int page, int size) {
+        // Tìm các User (Patient) dựa vào a.doctor.id (ID của bảng Doctor) thay vì bảng User
+        return find("select distinct a.patient from Appointment a where a.doctor.id = ?1 and a.isDeleted = false", doctorId)
+                .page(page, size)
+                .list();
+    }
+
+    public long countPatientsByDoctorId(Long doctorId) {
+        return find("select distinct a.patient from Appointment a where a.doctor.id = ?1 and a.isDeleted = false", doctorId)
                 .count();
     }
 }

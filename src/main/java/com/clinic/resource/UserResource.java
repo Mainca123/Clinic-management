@@ -172,4 +172,29 @@ public class UserResource {
         String result = userService.deleteUser(id);
         return RestData.success(result);
     }
+
+    // Thêm vào file UserResource.java
+
+    @GET
+    @Path("/patients-by-doctor")
+    @RolesAllowed("ADMIN") // Chỉ Admin mới có quyền chọn bác sĩ để xem danh sách này
+    @Operation(
+            summary = "Admin xem danh sách bệnh nhân của một bác sĩ",
+            description = "API giúp Admin truyền ID bác sĩ từ giao diện quản lý để xem toàn bộ bệnh nhân của bác sĩ đó."
+    )
+    public RestData<UserListResponse> getPatientsByDoctorForAdmin(
+            @QueryParam("doctorId") Long doctorId,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("10") int size) {
+
+        // Kiểm tra nếu Admin chưa chọn bác sĩ (truyền thiếu param)
+        if (doctorId == null) {
+            return RestData.error("Vui lòng cung cấp ID bác sĩ (doctorId không được để trống)");
+        }
+
+        // Gọi sang Service xử lý dữ liệu
+        UserListResponse response = userService.getPatientsForAdmin(doctorId, page, size);
+
+        return RestData.success(response);
+    }
 }
