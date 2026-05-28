@@ -3,6 +3,7 @@ package com.clinic.resource;
 
 import com.clinic.base.RestData;
 import com.clinic.domain.dto.PasswordRequest;
+import com.clinic.domain.dto.UserListResponse;
 import com.clinic.domain.dto.UserUpdateRequest;
 import com.clinic.service.UserService;
 import io.quarkus.security.Authenticated;
@@ -10,7 +11,9 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
@@ -128,27 +131,24 @@ public class UserResource {
         return jwt.getClaim("upn");
     }
 
+    // Sửa lại API GET danh sách người dùng tại UserResource.java
+
     @GET
-    @Operation(
-            summary = "Lấy danh sách người dùng",
-            description = "Admin lấy danh sách người dùng theo phân trang"
-    )
-    @APIResponse(
-            responseCode = "200",
-            description = "Lấy danh sách người dùng thành công"
-    )
-    public RestData<?> getUsers(
+    @RolesAllowed({"ADMIN", "DOCTOR"}) // Chỉ cho phép Admin và Doctor gọi API này
+    @Operation(summary = "Lấy danh sách người dùng/bệnh nhân có phân trang")
+    public RestData<UserListResponse> listUsers(
+            @Context SecurityContext sec,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("10") int size) {
 
-            @QueryParam("page")
-            @DefaultValue("1")
-            int page,
+        // 1. Lấy thông tin định danh ID và Role từ Token người dùng đang đăng nhập
+        Long currentUserId = Long.parseLong(jwt.getSubject());
+        String role = sec.isUserInRole("ADMIN") ? "ADMIN" : "DOCTOR";
 
-            @QueryParam("size")
-            @DefaultValue("20")
-            int size
-    ) {
+        // 2. Gọi sang Service để xử lý phân quyền lấy dữ liệu
+        UserListResponse response = userService.getUsers(currentUserId, role, page, size);
 
-        return RestData.success(userService.getUsers(page, size));
+        return RestData.success(response);
     }
 
     // Bổ sung vào class UserResource.java

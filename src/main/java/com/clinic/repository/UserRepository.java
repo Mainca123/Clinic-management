@@ -58,4 +58,19 @@ public class UserRepository implements PanacheRepository<User> {
         return count("isDeleted = false");
     }
 
+    // Thêm vào class UserRepository.java
+
+    // 2. >>> ĐOẠN SỬA ĐỔI CHÍNH CHỮA LỖI SYNTAX <<<
+    public List<User> getPatientsByDoctor(Long doctorUserId, int page, int size) {
+        // Bắt buộc phải viết đầy đủ câu lệnh có từ khóa "select" để Hibernate hiểu ta đang lấy dữ liệu từ bảng Appointment sang
+        return find("select distinct a.patient from Appointment a where a.doctor.user.id = ?1 and a.isDeleted = false", doctorUserId)
+                .page(page, size)
+                .list();
+    }
+
+    public long countPatientsByDoctor(Long doctorUserId) {
+        // Tương tự cho hàm đếm số lượng
+        return find("select distinct a.patient from Appointment a where a.doctor.user.id = ?1 and a.isDeleted = false", doctorUserId)
+                .count();
+    }
 }

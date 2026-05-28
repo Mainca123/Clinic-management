@@ -89,14 +89,31 @@ public class UserService {
         return "change.password.success";
     }
 
-    public UserListResponse getUsers(int page, int size) {
+    // Sửa lại hàm getUsers trong file UserService.java của bạn
 
-        List<User> users = userRepository.getUsers(page, size);
+    public UserListResponse getUsers(Long currentUserId, String role, int page, int size) {
+        List<User> users;
+        long totalItems;
 
-        long totalItems = userRepository.countUsers();
+        // 1. Kiểm tra vai trò của người dùng đang đăng nhập
+        if ("ADMIN".equals(role)) {
+            // Nếu là ADMIN -> Lấy ra toàn bộ người dùng trong hệ thống
+            users = userRepository.getUsers(page, size);
+            totalItems = userRepository.countUsers();
+        } else if ("DOCTOR".equals(role)) {
+            // Nếu là DOCTOR -> Chỉ lấy danh sách bệnh nhân từng đặt lịch với bác sĩ này
+            users = userRepository.getPatientsByDoctor(currentUserId, page, size);
+            totalItems = userRepository.countPatientsByDoctor(currentUserId);
+        } else {
+            // Trường hợp User thường hoặc không hợp lệ -> Trả về danh sách rỗng hoặc quăng lỗi tùy bạn
+            users = new java.util.ArrayList<>();
+            totalItems = 0;
+        }
 
+        // 2. Tính toán số trang dựa trên tổng số item lấy được
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
+        // 3. Trả về Response DTO như cũ của bạn
         return UserListResponse.builder()
                 .users(mapper.toUserResponses(users))
                 .totalItems(totalItems)
