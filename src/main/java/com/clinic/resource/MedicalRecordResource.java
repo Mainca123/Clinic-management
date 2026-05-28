@@ -1,6 +1,7 @@
 package com.clinic.resource;
 
 import com.clinic.base.RestData;
+import com.clinic.constant.RoleType;
 import com.clinic.domain.dto.MedicalRecordRequest;
 import com.clinic.domain.dto.MedicalRecordResponse;
 import com.clinic.domain.dto.PrescriptionDetailResponse;
@@ -72,7 +73,7 @@ public class MedicalRecordResource {
     }
 
     @GET
-    @RolesAllowed({"ADMIN", "DOCTOR", "STAFF"}) // Bác sĩ, admin và nhân viên lễ tân đều có quyền xem lịch sử bệnh án
+    @RolesAllowed({"ADMIN", "DOCTOR", RoleType.Constants.PATIENT}) // Bác sĩ, admin và nhân viên lễ tân đều có quyền xem lịch sử bệnh án
     @Operation(summary = "Lịch sử bệnh án theo người dùng", description = "Lấy danh sách toàn bộ bệnh án chi tiết của một bệnh nhân theo ID")
     public RestData<List<MedicalRecordResponse>> getRecordsByPatient(@QueryParam("patientId") Long patientId) {
 
