@@ -57,6 +57,14 @@ public class AppointmentService {
         entity.setDoctor(doctor); // Gán đối tượng Doctor vào
         // ----------------------------------------------
 
+        // >>> BƯỚC SỬA: GÁN THÔNG TIN TRIỆU CHỨNG CHO ENTITY <<<
+        // Lưu ý: Bạn hãy kiểm tra xem trong class Appointment (Entity) tên thuộc tính là getSymptom() hay getSymptoms() để gọi chính xác nhé.
+        if (request.getSymptoms() == null || request.getSymptoms().trim().isEmpty()) {
+            entity.setSymptoms("Không có ghi chú"); // Hiển thị chuỗi mặc định nếu trống
+        } else {
+            entity.setSymptoms(request.getSymptoms().trim());
+        }
+
         // 3. Thiết lập các giá trị mặc định
         entity.setStatus(AppointmentStatus.PENDING);
         entity.setIsDeleted(false);

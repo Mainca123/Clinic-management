@@ -18,5 +18,6 @@ public class AppointmentResponse {
     private String doctorName;
     private LocalDate appointmentDate;
     private LocalTime startTime;
+    private String symptoms;
     private AppointmentStatus status;
 }
