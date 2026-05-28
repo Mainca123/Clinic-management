@@ -120,16 +120,16 @@ public class AppointmentRepository implements PanacheRepository<Appointment> {
         String search = "%" + keyword.trim().toLowerCase() + "%";
 
         return find("""
-                select a
-                from Appointment a
-                where a.patient.user.id = ?1
-                and (
-                    lower(a.doctor.user.username) like ?2
-                    or lower(a.status) like ?2
-                )
-                and a.isDeleted = false
-                order by a.createdAt desc
-                """,
+            select a
+            from Appointment a
+            where a.patient.id = ?1
+            and (
+                lower(a.doctor.user.username) like ?2
+                or str(a.status) like ?2
+            )
+            and a.isDeleted = false
+            order by a.id desc
+            """,
                 patientUserId,
                 search
         )
