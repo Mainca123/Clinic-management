@@ -3,6 +3,7 @@ package com.clinic.repository;
 import com.clinic.domain.entity.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +13,10 @@ import java.util.Optional;
 public class UserRepository implements PanacheRepository<User> {
 
     public Optional<User> findByUsernameOrEmail(String identifier) {
-        return find("username = ?1 or email = ?1 and isDeleted = false", identifier)
-                .firstResultOptional();
+        return find(
+                "(username = :identifier or email = :identifier) and isDeleted = false",
+                Parameters.with("identifier", identifier)
+        ).firstResultOptional();
     }
 
     public Optional<User> findByEmail(String email) {
