@@ -12,7 +12,7 @@ import java.util.Optional;
 public class UserRepository implements PanacheRepository<User> {
 
     public Optional<User> findByUsernameOrEmail(String identifier) {
-        return find("username = ?1 or email = ?1", identifier)
+        return find("username = ?1 or email = ?1 and isDeleted = false", identifier)
                 .firstResultOptional();
     }
 
