@@ -99,4 +99,18 @@ public class DepartmentService {
         return "OK"; // Trả về thông báo "OK" đúng theo tài liệu thiết kế
 
     }
+
+    @Transactional
+    public List<DepartmentResponse> getAllForAI() {
+
+        return departmentRepository.findAll()
+                .list()
+                .stream()
+                .map(department -> DepartmentResponse.builder()
+                        .id(department.id)
+                        .name(department.getName())
+                        .description(department.getDescription())
+                        .build())
+                .toList();
+    }
 }

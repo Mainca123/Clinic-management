@@ -131,4 +131,35 @@ public class DoctorService {
         return "Thông báo thành công"; // Hoặc "OK" tùy bạn chuẩn hóa text trả về
     }
 
+    @Transactional
+    public List<DoctorResponse> findByDepartment(String departmentName) {
+
+        return doctorRepository.searchByDepartment(departmentName)
+                .stream()
+                .map(doctor -> DoctorResponse.builder()
+                        .id(doctor.id)
+                        .fullName(doctor.getUser().getFullName())
+                        .email(doctor.getUser().getEmail())
+                        .departmentName(doctor.getDepartment().getName())
+                        .specialization(doctor.getSpecialization())
+                        .experienceYears(doctor.getExperienceYears())
+                        .build())
+                .toList();
+    }
+
+    @Transactional
+    public List<DoctorResponse> getDoctorsByDepartment(Long departmentId){
+        return doctorRepository.fileByDepartmentId(departmentId)
+                .stream()
+                .map(doctor -> DoctorResponse.builder()
+                        .id(doctor.id)
+                        .fullName(doctor.getUser().getFullName())
+                        .email(doctor.getUser().getEmail())
+                        .departmentName(doctor.getDepartment().getName())
+                        .specialization(doctor.getSpecialization())
+                        .experienceYears(doctor.getExperienceYears())
+                        .build())
+                .toList();
+    }
+
 }

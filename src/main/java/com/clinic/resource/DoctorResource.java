@@ -88,18 +88,29 @@ public class DoctorResource {
 
     @GET
     @Operation(
-            summary = "Lấy tất cả các bác sĩ",
-            description = "API dùng để lấy tất cả các bác sĩ"
+            summary = "Lấy danh sách bác sĩ",
+            description = "Lấy danh sách tất cả bác sĩ hoặc lọc theo khoa"
     )
     @APIResponse(
             responseCode = "200",
-            description = "Lấy thành công"
+            description = "Lấy danh sách bác sĩ thành công"
     )
-    @APIResponse(
-            responseCode = "404",
-            description = "Không tìm thấy bác sĩ")
-    public RestData<?> getAllDoctor(@QueryParam("page") @DefaultValue("0") int page) {
-        return RestData.success(doctorService.getAllDoctor(page));
+    public RestData<?> getDoctors(
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("departmentId")
+            @Parameter(description = "ID của khoa", required = false)
+            Long departmentId
+    ) {
+
+        if (departmentId != null) {
+            return RestData.success(
+                    doctorService.getDoctorsByDepartment(departmentId)
+            );
+        }
+
+        return RestData.success(
+                doctorService.getAllDoctor(page)
+        );
     }
 
     @DELETE
@@ -128,4 +139,29 @@ public class DoctorResource {
         return RestData.success(result);
 
     }
+
+
+//
+//    @GET
+//    @Operation(
+//            summary = "Lấy danh sách bác sĩ theo khoa",
+//            description = "API dùng để lấy danh sách bác sĩ thuộc một khoa"
+//    )
+//    @APIResponse(
+//            responseCode = "200",
+//            description = "Lấy danh sách bác sĩ thành công"
+//    )
+//    @APIResponse(
+//            responseCode = "404",
+//            description = "Không tìm thấy khoa hoặc không có bác sĩ"
+//    )
+//    public RestData<?> getDoctorsByDepartment(
+//            @QueryParam("departmentId")
+//            @Parameter(description = "ID của khoa", required = true)
+//            Long departmentId) {
+//
+//        return RestData.success(
+//                doctorService.getDoctorsByDepartment(departmentId)
+//        );
+//    }
 }
