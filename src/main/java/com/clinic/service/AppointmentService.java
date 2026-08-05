@@ -3,6 +3,7 @@ package com.clinic.service;
 import com.clinic.constant.AppointmentStatus;
 import com.clinic.domain.dto.AppointmentRequest;
 import com.clinic.domain.dto.AppointmentResponse;
+import com.clinic.domain.dto.AppointmentTimeResponse;
 import com.clinic.domain.entity.Appointment;
 import com.clinic.domain.entity.Doctor;
 import com.clinic.domain.entity.User;
@@ -17,6 +18,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,18 +82,10 @@ public class AppointmentService {
 
     public List<AppointmentResponse> getAppointments(Long userId, String role, int pageIndex, int pageSize) {
         Page page = Page.of(pageIndex, pageSize);
-        PanacheQuery<Appointment> query;
 
-        if ("DOCTOR".equals(role)) {
-            // Nếu là bác sĩ, lọc theo doctor.user.id
-            query = appointmentRepository.find("doctor.user.id = ?1 and isDeleted = false", userId);
-        } else {
-            // Nếu là bệnh nhân, lọc trực tiếp theo patient.id
-            query = appointmentRepository.find("patient.id = ?1 and isDeleted = false", userId);
-        }
+        PanacheQuery<Appointment> query = appointmentRepository.findByUserId(userId, role, page);
 
-        return query.page(page)
-                .list()
+        return query.list()
                 .stream()
                 .map(appointmentMapper::toResponse)
                 .collect(Collectors.toList());
@@ -149,5 +144,20 @@ public class AppointmentService {
         // appointment.setStatus(AppointmentStatus.CANCELLED);
 
         // Kết thúc method, Quarkus Hibernate Panache sẽ tự động đồng bộ xuống Database
+    }
+
+    @Transactional
+    public List<AppointmentTimeResponse> getAppointmentByDate(Long doctorId, LocalDate date){
+        try {
+            return appointmentRepository.findByDoctorIdAndDate(doctorId, date)
+                    .stream()
+                    .map(appointment -> AppointmentTimeResponse.builder()
+                            .id(appointment.id)
+                            .startTime(appointment.getStartTime())
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

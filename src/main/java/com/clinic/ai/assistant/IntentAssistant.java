@@ -99,7 +99,7 @@ public class IntentAssistant {
 
             case "SYSTEM_SUPPORT":
                 return new ChatResponse(
-                        "Bạn cần hỗ trợ vấn đề gì?",
+                        "Chức năng hỗ trợ hệ thống đang được phát triển.",
                         "SYSTEM_SUPPORT",
                         true,
                         null,
@@ -112,13 +112,13 @@ public class IntentAssistant {
             default:
                 return new ChatResponse(
                         """
-                        Xin lỗi, tôi chưa hiểu rõ yêu cầu của bạn.
+                        Xin lỗi, tôi chưa hiểu rõ yêu cầu của bạn !!!\n\n
                 
-                        Hiện tôi có thể hỗ trợ:
-                        • Tư vấn chuyên khoa dựa trên triệu chứng.
-                        • Gợi ý bác sĩ phù hợp.
-                        • Hỗ trợ đặt lịch khám.
-                        • Giải đáp thông tin về phòng khám.
+                        Hiện tôi có thể hỗ trợ:\n
+                        • Tư vấn chuyên khoa dựa trên triệu chứng.\n
+                        • Gợi ý bác sĩ phù hợp.\n
+                        • Hỗ trợ đặt lịch khám.\n
+                        • Giải đáp thông tin về phòng khám.\n\n
                 
                         Bạn có thể mô tả triệu chứng hoặc đặt câu hỏi liên quan đến phòng khám để tôi hỗ trợ.
                         """,

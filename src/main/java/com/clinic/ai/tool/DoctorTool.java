@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @ApplicationScoped
@@ -51,6 +52,9 @@ public class DoctorTool {
 
         prompt.append("\nTriệu chứng: ")
                 .append(symptoms);
+
+        System.out.println("Symptoms = " + symptoms);
+        System.out.println(symptoms.getBytes(StandardCharsets.UTF_8).length);
 
         OllamaRequest request = new OllamaRequest(
                 "qwen2.5:3b",

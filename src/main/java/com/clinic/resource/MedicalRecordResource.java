@@ -40,7 +40,7 @@ public class MedicalRecordResource {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({"ADMIN", "DOCTOR", "STAFF"}) // Thêm quyền STAFF (Nhân viên/Lễ tân) hoặc PATIENT tùy bạn nếu họ cần xem đơn thuốc để phát thuốc
+    @RolesAllowed({"ADMIN", "DOCTOR", "PATIENT"}) // Thêm quyền STAFF (Nhân viên/Lễ tân) hoặc PATIENT tùy bạn nếu họ cần xem đơn thuốc để phát thuốc
     @Operation(summary = "Xem chi tiết bệnh án", description = "Lấy đầy đủ thông tin bệnh án và danh sách đơn thuốc chi tiết bằng ID bệnh án")
     public RestData<MedicalRecordResponse> getRecordById(@jakarta.ws.rs.PathParam("id") Long id) {
         // Gọi xuống service xử lý và đóng gói bằng chuẩn RestData thành công

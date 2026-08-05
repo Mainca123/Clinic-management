@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class AppointmentRepository implements PanacheRepository<Appointment> {
+
     /**
      * Kiểm tra bác sĩ có bận hay không
      */
@@ -45,14 +46,16 @@ public class AppointmentRepository implements PanacheRepository<Appointment> {
             return find("""
                     doctor.user.id = ?1
                     and isDeleted = false
+                    order by appointmentDate desc, startTime asc
                     """,
                     userId
             ).page(page);
         }
 
         return find("""
-                patient.user.id = ?1
+                patient.id = ?1
                 and isDeleted = false
+                order by appointmentDate desc, startTime asc
                 """,
                 userId
         ).page(page);
@@ -95,7 +98,7 @@ public class AppointmentRepository implements PanacheRepository<Appointment> {
                     or lower(a.status) like ?2
                 )
                 and a.isDeleted = false
-                order by a.createdAt desc
+                order by a.appointmentDate desc, a.startTime desc
                 """,
                 doctorUserId,
                 search
@@ -120,20 +123,33 @@ public class AppointmentRepository implements PanacheRepository<Appointment> {
         String search = "%" + keyword.trim().toLowerCase() + "%";
 
         return find("""
-            select a
-            from Appointment a
-            where a.patient.id = ?1
-            and (
-                lower(a.doctor.user.username) like ?2
-                or str(a.status) like ?2
-            )
-            and a.isDeleted = false
-            order by a.id desc
-            """,
+                select a
+                from Appointment a
+                where a.patient.id = ?1
+                and (
+                    lower(a.doctor.user.username) like ?2
+                    or str(a.status) like ?2
+                )
+                and a.isDeleted = false
+                order by a.appointmentDate desc, a.startTime desc
+                """,
                 patientUserId,
                 search
         )
                 .page(Page.ofSize(SEARCH_LIMIT))
                 .list();
+    }
+
+    public List<Appointment> findByDoctorIdAndDate(Long doctorId, LocalDate date) {
+
+        return find("""
+            doctor.id = ?1
+            and appointmentDate = ?2
+            and isDeleted = false
+            order by startTime asc
+            """,
+                doctorId,
+                date
+        ).list();
     }
 }

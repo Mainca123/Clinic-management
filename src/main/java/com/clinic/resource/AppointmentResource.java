@@ -18,6 +18,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.time.LocalDate;
+
 @Path("appointments") // Đường dẫn API chuẩn RESTful
 @Consumes(MediaType.APPLICATION_JSON) // Nhận dữ liệu JSON
 @Produces(MediaType.APPLICATION_JSON) // Trả về dữ liệu JSON
@@ -106,4 +108,20 @@ public class AppointmentResource {
         appointmentService.deleteAppointmentStatus(id);
         return RestData.success("Xóa/Hủy lịch hẹn thành công");
     }
+
+    @GET
+    @Path("/doctors/{doctorId}")
+    @Operation(
+            summary = "Bệnh nhân lấy lịch hẹn của bác sĩ theo ngày",
+            description = "Dùng để lấy các ca khám của bác sĩ trong một ngày"
+    )
+    public RestData<?> getAppointmentForPatient(
+            @PathParam("doctorId") Long doctorId,
+            @QueryParam("date") LocalDate date
+    ) {
+        return RestData.success(
+                appointmentService.getAppointmentByDate(doctorId, date)
+        );
+    }
+
 }

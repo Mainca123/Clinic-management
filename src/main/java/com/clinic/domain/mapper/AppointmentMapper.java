@@ -2,9 +2,12 @@ package com.clinic.domain.mapper;
 
 import com.clinic.domain.dto.AppointmentRequest;
 import com.clinic.domain.dto.AppointmentResponse;
+import com.clinic.domain.dto.AppointmentTimeResponse;
 import com.clinic.domain.entity.Appointment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper(componentModel = "cdi") // "cdi" giúp Quarkus có thể @Inject Mapper này
 public interface AppointmentMapper {
