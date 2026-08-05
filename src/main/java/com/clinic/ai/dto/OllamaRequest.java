@@ -17,4 +17,13 @@ public class OllamaRequest {
 
     private boolean stream;
 
+    private Object format;
+
+    private OllamaOptions options;
+
+    public OllamaRequest(String model, List<Message> messages, boolean stream) {
+        this.model = model;
+        this.messages = messages;
+        this.stream = stream;
+    }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class DoctorSuggestionPayload {
 
+    private Long departmentId;
+
     // Chuyên khoa AI đề xuất
     private String department;
 
@@ -22,6 +24,8 @@ public class DoctorSuggestionPayload {
 
     // Lời khuyên ban đầu
     private String advice;
+
+    private Double confidence;
 
     // Danh sách bác sĩ
     private List<DoctorResponse> doctors;

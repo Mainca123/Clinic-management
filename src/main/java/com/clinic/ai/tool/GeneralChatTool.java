@@ -1,79 +1,48 @@
 package com.clinic.ai.tool;
 
-import com.clinic.ai.client.OllamaClient;
+import com.clinic.ai.assistant.PromptBuilder;
 import com.clinic.ai.dto.ChatResponse;
 import com.clinic.ai.dto.GeneralChatPayload;
-import com.clinic.ai.dto.Message;
-import com.clinic.ai.dto.OllamaRequest;
-import com.clinic.ai.dto.OllamaResponse;
+import com.clinic.ai.service.OllamaService;
+import com.clinic.ai.util.TextNormalizer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-
-import java.util.List;
 
 @ApplicationScoped
 public class GeneralChatTool {
+    @Inject
+    OllamaService ollamaService;
 
     @Inject
-    @RestClient
-    OllamaClient ollamaClient;
+    PromptBuilder promptBuilder;
 
     public ChatResponse chat(String message) {
-
-        String prompt = """
-            <|system|>
-             
-             Bạn là trợ lý AI của Hệ thống Quản lý Phòng khám.
-
-             QUY TẮC BẮT BUỘC:
-
-             1. Chỉ được trả lời bằng TIẾNG VIỆT.
-             2. Tuyệt đối không được sử dụng tiếng Anh.
-             3. Tuyệt đối không được sử dụng tiếng Trung.
-             4. Nếu câu trả lời chứa bất kỳ từ nào không phải tiếng việt thì hãy viết lại hoàn toàn bằng tiếng Việt.
-             5. Trả lời ngắn gọn.
-               
-            Vai trò của bạn:
-            - Hỗ trợ người dùng sử dụng hệ thống phòng khám.
-            - Trò chuyện thân thiện khi người dùng chào hỏi.
-            - Chỉ trả lời bằng tiếng Việt.
-            - Không sử dụng ngôn ngữ khác tiếng việt.
-            - Trả lời ngắn gọn, tối đa 3 câu.
-            
-            Bạn có thể hỗ trợ:
-            - Tư vấn chuyên khoa dựa trên triệu chứng.
-            - Gợi ý bác sĩ phù hợp.
-            - Hướng dẫn đặt lịch khám.
-            - Giải đáp thông tin về phòng khám như giờ làm việc, địa chỉ, quy trình khám.
-           
-            
-            Nếu người dùng hỏi ngoài phạm vi phòng khám, hãy trả lời lịch sự rằng bạn chỉ hỗ trợ các vấn đề liên quan đến hệ thống phòng khám.
-            
-            <|user|>
-            %s
-            """.formatted(message);
-
-        OllamaRequest request = new OllamaRequest(
-                "qwen2.5:3b",
-                List.of(new Message("user", prompt)),
-                false
-        );
-
-        OllamaResponse response = ollamaClient.chat(request);
-
-        String reply = response.getMessage().getContent().trim();
+        String reply = deterministicReply(message);
+        if (reply == null) {
+            reply = ollamaService.text(promptBuilder.generalSystemPrompt(), message, 180)
+                    .orElse("Xin chào! Tôi có thể hỗ trợ tìm chuyên khoa, bác sĩ, hướng dẫn đặt lịch và tra cứu thông tin phòng khám.");
+        }
 
         GeneralChatPayload payload = GeneralChatPayload.builder()
                 .userMessage(message)
+                .aiResponse(reply)
                 .build();
 
-        return new ChatResponse(
-                reply,
-                "GENERAL_CHAT",
-                true,
-                payload,
-                null
-        );
+        return ChatResponse.success(reply, "GENERAL_CHAT", payload);
+    }
+
+    private String deterministicReply(String message) {
+        String normalized = TextNormalizer.normalize(message);
+        if (TextNormalizer.containsAny(message, "bạn là ai", "bạn tên gì")) {
+            return "Tôi là trợ lý AI của Hệ thống Quản lý Phòng khám. Tôi hỗ trợ tìm chuyên khoa, gợi ý bác sĩ, đặt hoặc hủy lịch và tra cứu bệnh án theo quyền của bạn.";
+        }
+        if (TextNormalizer.containsAny(message, "bạn làm được gì", "bạn có thể làm gì")) {
+            return "Tôi có thể gợi ý chuyên khoa và bác sĩ, hỗ trợ đặt, xem, hủy hoặc đổi lịch, tra cứu bệnh án và hướng dẫn sử dụng hệ thống.";
+        }
+        if (TextNormalizer.containsAny(message, "xin chào", "chào bạn")
+                || normalized.equals("hello") || normalized.equals("hi") || normalized.equals("chao")) {
+            return "Xin chào! Tôi là trợ lý AI của phòng khám. Bạn cần tìm bác sĩ, đặt lịch hay tra cứu thông tin nào?";
+        }
+        return null;
     }
 }

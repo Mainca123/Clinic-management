@@ -24,4 +24,12 @@ public class ChatResponse {
 
     // Metadata nếu cần
     private Map<String, Object> metadata;
+
+    public static ChatResponse success(String message, String tool, Object payload) {
+        return new ChatResponse(message, tool, true, payload, null);
+    }
+
+    public static ChatResponse failure(String message, String tool) {
+        return new ChatResponse(message, tool, false, null, null);
+    }
 }
